@@ -1,0 +1,60 @@
+body {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  height: 100%;
+  overflow: hidden;
+}
+html {
+  height: 100%;
+}
+.ditem {
+  pointer-events: none;
+}
+div.dbox {
+  font-size: 48px;
+  text-align: center;
+}
+div.notes {
+  font-size: 24px;
+  color: black;
+  background-color: white;
+  border-radius: 16px;
+  padding: 16px;
+  max-width: 400px;
+  visibility: hidden;
+  margin: 0.2em auto;
+  /*pointer-events: none;*/
+}
+div.notes a {
+  display: block;
+  margin-left: auto;
+  width: 24px;
+}
+.clicky {
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  pointer-events: auto;
+}
+div.dbox img:first-child {
+  margin: -8px;
+}
+div.dbox img {
+  display: block;
+  margin: 0 auto;
+  max-width: 400px;
+}
+div.selected div.notes {
+  visibility: visible;
+  pointer-events: auto;
+}
+div.idea {
+  color: #FFCF54;
+}
+div.topic {
+  color: #7450D4;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.4);
+}

@@ -1,0 +1,24 @@
+{
+  "name": "ideaglobe",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {
+    "coffee-loader": "^0.7.2",
+    "coffee-script": "^1.9.3",
+    "css-loader": "^0.14.4",
+    "extract-text-webpack-plugin": "^0.8.1",
+    "json-loader": "^0.5.2",
+    "node-libs-browser": "^0.5.2",
+    "pouchdb": "^3.2.1",
+    "style-loader": "^0.12.3",
+    "three": "^0.71.0",
+    "webpack": "^1.9.10"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Sam Gentle <sam@samgentle.com>",
+  "license": "MIT"
+}
