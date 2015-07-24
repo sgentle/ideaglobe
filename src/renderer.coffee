@@ -39,8 +39,25 @@ document.body.appendChild cssrenderer.domElement
 items = {}
 window.items = items
 
+itemsa = []
+updateItemsa = -> itemsa = (v for k, v of items)
+
 modify = (id, html) ->
   items[id]?.element.innerHTML = html
+
+cos = Math.cos
+sin2 = (x) -> Math.sin(x) ** 2
+
+circleDist = (p1, p2) ->
+  Math.asin(Math.sqrt(
+    sin2((p2.x - p1.x)/2) +
+    cos(p2.x)*cos(p1.x)*sin2((p2.y - p1.y)/2)
+  ))
+
+minDist = (p) ->
+  itemsa.reduce (min, item) ->
+    newmin = circleDist(item._rot, p); Math.min(newmin, min)
+  , Infinity
 
 add = (id, html) ->
   return modify id, html if items[id]
@@ -52,12 +69,24 @@ add = (id, html) ->
 
   item = new THREE.CSS3DObject div
 
+  i = 0
+  while i < 1000
+    rot =
+      x: (Math.random()-0.5)*Math.PI/3
+      y: Math.random()*Math.PI*4
+    m = minDist rot
+    break if m > Math.PI * 2 / 40
+    i++
+  #console.log "placed with minDist", m, "i", i
+
   matrix = new THREE.Matrix4()
-    .multiply new THREE.Matrix4().makeRotationY Math.random()*Math.PI*4
-    .multiply new THREE.Matrix4().makeRotationX (Math.random()-0.5)*Math.PI/3
+    .multiply new THREE.Matrix4().makeRotationY rot.y
+    .multiply new THREE.Matrix4().makeRotationX rot.x
     .multiply new THREE.Matrix4().makeTranslation 0, 0, 5
 
   item.applyMatrix(matrix)
+
+  item._rot = rot
 
   scale = 48/(Math.min(window.innerWidth,window.innerHeight)*5) * 0.5
   item.scale.set scale, scale, scale
@@ -86,6 +115,7 @@ add = (id, html) ->
 
   sphere.add item
   items[id] = item
+  updateItemsa()
 
 ROTATION_SPEED = 0.001
 
@@ -100,6 +130,7 @@ remove = (id) ->
   sphere.remove items[id]
   scene.remove items[id]
   delete items[id]
+  updateItemsa()
 
 render = ->
   requestAnimationFrame render
