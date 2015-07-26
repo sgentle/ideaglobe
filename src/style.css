@@ -4,6 +4,7 @@ body {
   border: 0;
   height: 100%;
   overflow: hidden;
+  font-family: monospace;
 }
 html {
   height: 100%;
@@ -55,6 +56,6 @@ div.idea {
   color: #FFCF54;
 }
 div.topic {
-  color: #7450D4;
+  color: #DDDDDD;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.4);
 }
