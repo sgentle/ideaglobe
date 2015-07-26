@@ -1,3 +1,4 @@
+{EventEmitter} = require 'events'
 THREE = require 'three'
 require('./CSS3DRenderer.js')(THREE)
 
@@ -43,10 +44,13 @@ itemsa = []
 updateItemsa = -> itemsa = (v for k, v of items)
 
 modify = (id, html) ->
-  items[id]?.element.innerHTML = html
+  items[id]?.obj.element.innerHTML = html
+  items[id]
 
 cos = Math.cos
 sin2 = (x) -> Math.sin(x) ** 2
+PI = Math.PI
+TWOPI = PI*2
 
 circleDist = (p1, p2) ->
   Math.asin(Math.sqrt(
@@ -56,8 +60,12 @@ circleDist = (p1, p2) ->
 
 minDist = (p) ->
   itemsa.reduce (min, item) ->
-    newmin = circleDist(item._rot, p); Math.min(newmin, min)
+    newmin = circleDist(item.rot, p); Math.min(newmin, min)
   , Infinity
+
+# Puts an angle in the range 0-TWOPI
+norm = (a) -> ((a % TWOPI) + TWOPI) % TWOPI #if a < 0 then -(-a % TWOPI) else a % TWOPI
+window.norm = norm
 
 add = (id, html) ->
   return modify id, html if items[id]
@@ -66,30 +74,32 @@ add = (id, html) ->
   div.style.backfaceVisibility = "hidden"
   div.innerHTML = html
 
-
-  item = new THREE.CSS3DObject div
+  item = new EventEmitter()
+  item.obj = obj = new THREE.CSS3DObject div
 
   i = 0
-  while i < 1000
+  m = 0
+  while m < Math.PI * 2 / 40
     rot =
-      x: (Math.random()-0.5)*Math.PI/3
-      y: Math.random()*Math.PI*4
+      x: (Math.random()-0.5)*PI/3
+      y: Math.random()*PI + PI/2 - norm sphere.rotation.y
     m = minDist rot
-    break if m > Math.PI * 2 / 40
     i++
-  #console.log "placed with minDist", m, "i", i
+    return null if i == 1000
 
   matrix = new THREE.Matrix4()
     .multiply new THREE.Matrix4().makeRotationY rot.y
     .multiply new THREE.Matrix4().makeRotationX rot.x
     .multiply new THREE.Matrix4().makeTranslation 0, 0, 5
 
-  item.applyMatrix(matrix)
+  obj.applyMatrix(matrix)
 
-  item._rot = rot
+  item.rot = rot
+  item.rd = - norm rot.y - PI/2 + sphere.rotation.y
+  item.id = id
 
   scale = 48/(Math.min(window.innerWidth,window.innerHeight)*5) * 0.5
-  item.scale.set scale, scale, scale
+  obj.scale.set scale, scale, scale
 
   div.onmousedown = (ev) ->
     return unless div.classList.contains('selected') or ev.target.classList.contains('clicky')
@@ -98,24 +108,25 @@ add = (id, html) ->
   div.addEventListener 'click', (ev) ->
     return unless ev.target.classList.contains 'clicky'
     selection = document.getSelection()
-    if item.parent is sphere
-      sphere.remove item
-      scene.add item
+    if obj.parent is sphere
+      sphere.remove obj
+      scene.add obj
       div.classList.add 'selected'
 
-      item.applyMatrix new THREE.Matrix4().makeRotationY sphere.rotation.y
-      item.applyMatrix new THREE.Matrix4().makeTranslation 0, 0, 0.1
+      obj.applyMatrix new THREE.Matrix4().makeRotationY sphere.rotation.y
+      obj.applyMatrix new THREE.Matrix4().makeTranslation 0, 0, 0.1
     else
-      scene.remove item
-      sphere.add item
+      scene.remove obj
+      sphere.add obj
       div.classList.remove 'selected'
 
-      item.applyMatrix new THREE.Matrix4().makeTranslation 0, 0, -0.1
-      item.applyMatrix new THREE.Matrix4().makeRotationY -sphere.rotation.y
+      obj.applyMatrix new THREE.Matrix4().makeTranslation 0, 0, -0.1
+      obj.applyMatrix new THREE.Matrix4().makeRotationY -sphere.rotation.y
 
-  sphere.add item
+  sphere.add obj
   items[id] = item
   updateItemsa()
+  item
 
 ROTATION_SPEED = 0.001
 
@@ -127,14 +138,27 @@ cssrenderer.domElement.onmouseup = ->
   ROTATION_SPEED = 0.001
 
 remove = (id) ->
-  sphere.remove items[id]
-  scene.remove items[id]
+  return unless items[id]
+  sphere.remove items[id].obj
+  scene.remove items[id].obj
   delete items[id]
   updateItemsa()
+  null
 
 render = ->
   requestAnimationFrame render
   sphere.rotation.y -= ROTATION_SPEED
+  for item in itemsa when item and item.obj.parent is sphere
+    ord = item.rd
+    item.rd += ROTATION_SPEED
+    #console.log "rd!", item.rd
+    if item.rd >= 0 and ord < 0
+      # console.log 'visible!', item.id, item.rd
+      item.emit 'visible'
+    else if item.rd >= PI
+      # console.log 'hidden!', item.id, item.rd
+      item.emit 'hidden'
+      item.rd -= TWOPI
   renderer.render scene, camera
   cssrenderer.render scene, camera
 
