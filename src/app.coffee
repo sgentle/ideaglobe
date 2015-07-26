@@ -5,7 +5,6 @@ pouch = require 'pouchdb'
 renderer = require './renderer.coffee'
 
 DB_URL = "#{document.location.href}/api"
-DB_URL = "http://localhost:5984/ideas/"
 remotedb = pouch(DB_URL)
 db = pouch('ideas')
 
