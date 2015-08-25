@@ -4,6 +4,24 @@
   <link rel="stylesheet" href="style.css">
   </head>
   <body>
-  <script src="app.js"></script>
+    <dialog id="add_dialog">
+      <form id="add_form" target="#">
+        <label class="label" for="name">Name</label><input type="text" name="name" id="dialog_name"><br />
+        <label class="label" for="_id">Id</label><input type="text" name="_id" id="dialog_id"><br />
+        <span class="label">Type</span>
+          <input type="radio" name="type" id="type_idea" value="idea" checked><label for="type_idea">Idea</label>
+          <input type="radio" name="type" id="type_topic" value="topic"><label for="type_topic">Topic</label>
+        <br />
+        <label class="label" for="link">Link</label><input type="text" name="link" id="dialog_link"><br />
+        <label class="label" for="notes">Notes</label>
+        <textarea name="notes" rows="10" cols="80" id="dialog_notes"></textarea><br />
+        <span class="right">
+          <button id="dialog_cancel">Cancel</button>
+          <input type="submit" id="dialog_submit">
+        </span>
+      </form>
+    </dialog>
+    <img id="add" src="add_circle_white_36px.svg">
+    <script src="app.js"></script>
   </body>
 </html>

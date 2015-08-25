@@ -8,6 +8,8 @@ DB_URL = "#{document.location.href}/api"
 remotedb = pouch(DB_URL)
 db = pouch('ideas')
 
+window.db = db
+
 visible = {}
 available = {}
 
@@ -90,5 +92,40 @@ db.changes(since: 'now', live: true).on 'change', (change) ->
     db.get(change.id).then (doc) ->
       addDoc doc
       maybeRender()
+
+
+# dialog-related stuff
+$ = document.querySelector.bind(document)
+EventTarget.prototype.on = EventTarget.prototype.addEventListener;
+dialog = $('#add_dialog')
+$('#add').on 'click', -> dialog.show()
+
+$('#dialog_cancel').addEventListener 'click', (ev) ->
+  ev.preventDefault()
+  dialog.close()
+
+$('#add_form').on 'submit', (ev) ->
+  ev.preventDefault()
+  data = {
+    name: $('#dialog_name').value
+    _id: $('#dialog_id').value
+    type: if $('#type_topic').checked then 'topic' else 'idea'
+    link: $('#dialog_link').value
+    notes: $('#dialog_notes').value
+  }
+  delete data.link if !data.link
+  console.log 'data', data
+  db.put(data)
+  .then ->
+    dialog.close()
+    $('#add_form').reset()
+  .catch (e) -> alert "Couldn't save document: #{e.message or e}"
+
+$('#dialog_name').on 'input', ->
+  $('#dialog_id').value = $('#dialog_name').value.toLowerCase()
+    .replace(/\W/g,'-')
+    .replace(/--+/g,'-')
+    .replace(/^-/,'')
+    .replace(/-$/,'')
 
 setInterval maybeRender, 500

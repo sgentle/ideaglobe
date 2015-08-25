@@ -59,3 +59,40 @@ div.topic {
   color: #DDDDDD;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.4);
 }
+
+#add {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  z-index: 10;
+}
+
+#add_dialog {
+  z-index: 10;
+}
+
+#add_dialog label {
+  vertical-align: top;
+}
+
+#add_dialog .label {
+  display: inline-block;
+  width: 5em;
+  font-weight: bold;
+}
+
+#add_dialog input[type="radio"] {
+  margin-left: 0;
+}
+
+#add_dialog textarea {
+  margin-left: -0.71em;
+}
+
+#add_dialog input[type=text] {
+  width: calc(100% - 6.5em);
+}
+
+.right {
+  float: right;
+}
