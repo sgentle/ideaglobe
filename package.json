@@ -12,10 +12,10 @@
     "extract-text-webpack-plugin": "^0.8.1",
     "json-loader": "^0.5.2",
     "node-libs-browser": "^0.5.2",
-    "pouchdb": "^3.2.1",
+    "pouchdb": "^5.1.0",
     "style-loader": "^0.12.3",
-    "three": "^0.71.0",
-    "webpack": "^1.9.10"
+    "three": "^0.73.0",
+    "webpack": "^1.12.9"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
