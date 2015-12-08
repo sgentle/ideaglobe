@@ -117,6 +117,7 @@ $('#add_form').on 'submit', (ev) ->
   console.log 'data', data
   db.put(data)
   .then ->
+    setDirty()
     dialog.close()
     $('#add_form').reset()
   .catch (e) -> alert "Couldn't save document: #{e.message or e}"
@@ -127,5 +128,39 @@ $('#dialog_name').on 'input', ->
     .replace(/--+/g,'-')
     .replace(/^-/,'')
     .replace(/-$/,'')
+
+
+# Syncing
+
+window.setDirty = ->
+  $('#sync').style.opacity = 1
+  $('#sync').style.pointerEvents = 'auto'
+  $('#sync').classList.remove 'spin'
+
+window.setClean = ->
+  $('#sync').style.opacity = null
+  $('#sync').style.pointerEvents = null
+  setTimeout ->
+    $('#sync').classList.remove 'spin'
+  , 500
+
+syncing = false
+
+$('#sync').on 'click', ->
+  $('#sync').classList.add 'spin'
+  return if syncing
+  syncing = true
+  db.replicate.to remotedb
+  .then (result) ->
+    setClean()
+    console.log result
+  .catch (err) ->
+    console.warn err
+    alert err.message
+    $('#sync').classList.remove 'spin'
+  .then ->
+    syncing = false
+
+
 
 setInterval maybeRender, 500
